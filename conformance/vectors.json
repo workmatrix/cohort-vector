@@ -1,0 +1,48 @@
+{
+	"_comment": "Cross-repo conformance fixtures for the Cohort-Vector wire format. Both the station backend and the booking-engine frontend MUST reproduce `vector` exactly when encoding `input`, and decode `vector` back to `features`. Regenerate only when WireFormat::VERSION changes.",
+	"version": 1,
+	"cases": [
+		{
+			"name": "empty",
+			"input": {},
+			"features": {},
+			"vector": "eyJfdiI6MX0"
+		},
+		{
+			"name": "full_acquisition",
+			"input": {"source": "google", "medium": "cpc", "campaign": "summer", "content": "hero", "locale": "de-CH", "channel": "app", "country": "CH", "market": "CH", "device": "mobile"},
+			"features": {"campaign": "summer", "channel": "app", "content": "hero", "country": "CH", "device": "mobile", "locale": "de-CH", "market": "CH", "medium": "cpc", "source": "google"},
+			"vector": "eyJfdiI6MSwiY2FtcGFpZ24iOiJzdW1tZXIiLCJjaGFubmVsIjoiYXBwIiwiY29udGVudCI6Imhlcm8iLCJjb3VudHJ5IjoiQ0giLCJkZXZpY2UiOiJtb2JpbGUiLCJsb2NhbGUiOiJkZS1DSCIsIm1hcmtldCI6IkNIIiwibWVkaXVtIjoiY3BjIiwic291cmNlIjoiZ29vZ2xlIn0"
+		},
+		{
+			"name": "occupancy_and_derived",
+			"input": {"adults": 2, "children": 1, "rooms": 1, "stayNights": 3, "leadTimeDays": 14},
+			"features": {"adults": "2", "children": "1", "leadTimeDays": "14", "rooms": "1", "stayNights": "3"},
+			"vector": "eyJfdiI6MSwiYWR1bHRzIjoiMiIsImNoaWxkcmVuIjoiMSIsImxlYWRUaW1lRGF5cyI6IjE0Iiwicm9vbXMiOiIxIiwic3RheU5pZ2h0cyI6IjMifQ"
+		},
+		{
+			"name": "key_order_independent_a",
+			"input": {"source": "google", "device": "mobile", "locale": "en"},
+			"features": {"device": "mobile", "locale": "en", "source": "google"},
+			"vector": "eyJfdiI6MSwiZGV2aWNlIjoibW9iaWxlIiwibG9jYWxlIjoiZW4iLCJzb3VyY2UiOiJnb29nbGUifQ"
+		},
+		{
+			"name": "key_order_independent_b",
+			"input": {"locale": "en", "source": "google", "device": "mobile"},
+			"features": {"device": "mobile", "locale": "en", "source": "google"},
+			"vector": "eyJfdiI6MSwiZGV2aWNlIjoibW9iaWxlIiwibG9jYWxlIjoiZW4iLCJzb3VyY2UiOiJnb29nbGUifQ"
+		},
+		{
+			"name": "drops_disallowed_keys",
+			"input": {"source": "google", "stayDates": {"start": "2025-01-01"}, "bookingDate": "2025-01-01", "featureFlag": "x"},
+			"features": {"source": "google"},
+			"vector": "eyJfdiI6MSwic291cmNlIjoiZ29vZ2xlIn0"
+		},
+		{
+			"name": "numeric_cast_including_zero",
+			"input": {"adults": 0, "stayNights": 7},
+			"features": {"adults": "0", "stayNights": "7"},
+			"vector": "eyJfdiI6MSwiYWR1bHRzIjoiMCIsInN0YXlOaWdodHMiOiI3In0"
+		}
+	]
+}

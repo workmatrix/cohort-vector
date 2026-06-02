@@ -1,0 +1,23 @@
+{
+	"name": "workmatrix/cohort-vector",
+	"description": "Shared, dependency-free codec for the Workmatrix Cohort-Vector — the cohort fingerprint carried on the Cohort-Vector header. Used by both the station backend and the booking-engine frontend so each side encodes/decodes identical vectors.",
+	"license": "proprietary",
+	"type": "library",
+	"version": "1.0.0",
+	"authors": [
+		{
+			"name": "Workmatrix GmbH",
+			"homepage": "https://www.workmatrix.de"
+		}
+	],
+	"require": {
+		"php": "^8.2",
+		"ext-json": "*",
+		"ext-mbstring": "*"
+	},
+	"autoload": {
+		"psr-4": {
+			"Workmatrix\\CohortVector\\": "src/"
+		}
+	}
+}
