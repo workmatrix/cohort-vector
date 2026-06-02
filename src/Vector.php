@@ -33,6 +33,11 @@ final class Vector {
 	 * @return array<string, string> The decoded features (already filtered and sorted)
 	 */
 	public static function decode(string $vector): array {
+		// Bound work on untrusted input: reject oversized headers before any decoding.
+		if (strlen($vector) > WireFormat::MAX_VECTOR_LENGTH) {
+			return [];
+		}
+
 		$json = self::base64urlDecode($vector);
 		if ($json === false) {
 			return [];
@@ -55,6 +60,10 @@ final class Vector {
 	 * the consumer to detect when its codec package has drifted from the server's.
 	 */
 	public static function version(string $vector): ?int {
+		if (strlen($vector) > WireFormat::MAX_VECTOR_LENGTH) {
+			return null;
+		}
+
 		$json = self::base64urlDecode($vector);
 		if ($json === false) {
 			return null;
@@ -93,7 +102,10 @@ final class Vector {
 	}
 
 	/**
-	 * Filter features to allowed keys, remove nulls/empties/overlength, sort by key.
+	 * Filter to allowed keys, drop null/empty/non-scalar/malformed/over-length values, sort by key.
+	 *
+	 * Input may be attacker-controlled (decode() passes untrusted JSON straight in), so anything
+	 * that is not a clean, in-range UTF-8 scalar is silently dropped rather than allowed to fail.
 	 *
 	 * @param  array<string, mixed> $features
 	 * @return array<string, string>
@@ -101,11 +113,24 @@ final class Vector {
 	private static function filterFeatures(array $features): array {
 		$filtered = [];
 		foreach ($features as $key => $value) {
-			if (in_array($key, WireFormat::ALLOWED_KEYS, true) && $value !== null && $value !== '') {
-				$str = (string)$value;
-				if (mb_strlen($str) <= WireFormat::MAX_VALUE_LENGTH) {
-					$filtered[$key] = $str;
-				}
+			if (!in_array($key, WireFormat::ALLOWED_KEYS, true) || $value === null || $value === '') {
+				continue;
+			}
+
+			// A non-scalar would cast to the literal "Array" and raise a conversion warning.
+			if (!is_scalar($value)) {
+				continue;
+			}
+
+			$str = (string)$value;
+
+			// Malformed UTF-8 would make json_encode() throw under JSON_THROW_ON_ERROR in encode().
+			if (!mb_check_encoding($str, 'UTF-8')) {
+				continue;
+			}
+
+			if (mb_strlen($str) <= WireFormat::MAX_VALUE_LENGTH) {
+				$filtered[$key] = $str;
 			}
 		}
 		ksort($filtered);
