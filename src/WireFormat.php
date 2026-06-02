@@ -31,6 +31,14 @@ final class WireFormat {
 	public const MAX_VALUE_LENGTH = 200;
 
 	/**
+	 * Maximum bytes of a raw encoded vector accepted by decode()/version().
+	 *
+	 * A full vector (every key at MAX_VALUE_LENGTH) is ~4 KB; 8 KB leaves headroom while letting
+	 * decode() reject oversized headers before base64/JSON decoding, bounding work on hostile input.
+	 */
+	public const MAX_VECTOR_LENGTH = 8192;
+
+	/**
 	 * Keys allowed in the vector — anything else is silently dropped.
 	 *
 	 * Values are stored as strings (numbers are cast); RulesEngine int-coerces numeric
