@@ -3,7 +3,7 @@
 	"description": "Shared, dependency-free codec for the Workmatrix Cohort-Vector — the cohort fingerprint carried on the Cohort-Vector header. Used by both the station backend and the booking-engine frontend so each side encodes/decodes identical vectors.",
 	"license": "proprietary",
 	"type": "library",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"authors": [
 		{
 			"name": "Workmatrix GmbH",
